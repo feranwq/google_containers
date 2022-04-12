@@ -13,6 +13,7 @@ on:
 jobs:
   sync:
     name: sync
+    environment: secrets
     env:
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
@@ -47,9 +48,9 @@ jobs:
           ${HOME}/sync/imgsync sync \
           --db ${HOME}/sync/bolt.db \
           --push-to registry.aliyuncs.com \
-          --password ${{ secrets.REGISTRY_PASS }}  \
+          --password ${REGISTRY_PASS}  \
           --push-ns=k8s_gcr_io_google_containers  \
-          --user ${{ secrets.REGISTRY_USER }}  \
+          --user ${REGISTRY_USER}  \
           --command-timeout ${TMOUT:=2h}  \
           --process-limit ${PROCESS:=2} \
           --img-timeout ${IMG_TMOUT:=10m} \
