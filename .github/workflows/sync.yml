@@ -49,7 +49,7 @@ jobs:
           --db ${HOME}/sync/bolt.db \
           --push-to registry.aliyuncs.com \
           --password ${REGISTRY_PASS}  \
-          --push-ns=k8s_gcr_io_google_containers  \
+          --push-ns=feran_kubeadm  \
           --user ${REGISTRY_USER}  \
           --command-timeout ${TMOUT:=2h}  \
           --process-limit ${PROCESS:=2} \
@@ -57,7 +57,9 @@ jobs:
           --live-interval ${LIVE:=9m20s}  \
           --login-retry ${LOGIN_RETRY:=8} \
           --specifie-ns "kube-apiserver,kube-controller-manager,kube-scheduler,kube-proxy" \
-          --specifie-ns "pause,etcd,coredns/coredns"
+          --specifie-ns "pause,etcd,coredns/coredns" \
+          --specifie-ns "dashboard,metrics-server,metrics-scraper" \
+          --specifie-ns "nginx-ingress-controller,k8s-dns-node-cache" \
           --debug=${DEBUG:=false}
     - name: after_success
       run: |
