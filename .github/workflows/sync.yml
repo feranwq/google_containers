@@ -56,6 +56,8 @@ jobs:
           --img-timeout ${IMG_TMOUT:=10m} \
           --live-interval ${LIVE:=9m20s}  \
           --login-retry ${LOGIN_RETRY:=8} \
+          --specifie-ns "kube-apiserver,kube-controller-manager,kube-scheduler,kube-proxy" \
+          --specifie-ns "pause,etcd,coredns/coredns"
           --debug=${DEBUG:=false}
     - name: after_success
       run: |

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-	"github.com/zhangguanzhang/google_containers/core"
+	"google_containers/core"
 )
 
 func NewSyncComamnd(Options *core.SyncOption) *cobra.Command {
@@ -87,7 +87,10 @@ func AddSyncLimitFlags(flagSet *flag.FlagSet, op *core.SyncOption) {
 		&op.RetryInterval, "retry-interval", 4*time.Second,
 		"retry interval while err.",
 	)
-	flagSet.StringArrayVar(
-		&op.AdditionNS, "addition-ns", nil,
+	flagSet.StringSliceVar(
+		&op.AdditionNS, "addition-ns", op.AdditionNS,
 		"addition ns to sync")
+	flagSet.StringSliceVar(
+		&op.SpecifieNS, "specifie-ns", op.SpecifieNS,
+		"specifie ns to sync")
 }

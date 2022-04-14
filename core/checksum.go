@@ -6,8 +6,8 @@ import (
 	"go/types"
 	"os"
 
-	bolt "github.com/etcd-io/bbolt"
 	log "github.com/sirupsen/logrus"
+	bolt "go.etcd.io/bbolt"
 )
 
 type CheckSumer interface {

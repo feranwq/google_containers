@@ -6,7 +6,7 @@
 
 本仓库只同步`k8s.gcr.io` ==> `registry.aliyuncs.com/k8sxio`，目前`gcr.io/google_containers`已经不和`k8s.gcr.io`一致了，所以目前只同步`k8s.gcr.io`
 
-目前已经同步完了，可以看[github action的运行状态](https://github.com/zhangguanzhang/google_containers/actions)
+目前已经同步完了，可以看[github action的运行状态](https://google_containers/actions)
 
 
 查看镜像列表的话去[阿里云镜像仓库市场](https://cr.console.aliyun.com/cn-hangzhou/instances/images) 

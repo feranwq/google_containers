@@ -15,27 +15,40 @@ import (
 )
 
 const (
-	imgList = "https://k8s.gcr.io/v2/tags/list"
-	DefaultHTTPTimeout        = 15 * time.Second
-	repo = "k8s.gcr.io/"
+	imgList            = "https://k8s.gcr.io/v2/tags/list"
+	imgListFormat      = "https://k8s.gcr.io/v2/%s/tags/list"
+	DefaultHTTPTimeout = 15 * time.Second
+	repo               = "k8s.gcr.io/"
 )
 
+func requestImageTagsList(retry int, retryInterval time.Duration, url string) (gorequest.Response, []byte, []error) {
+	return gorequest.New().
+		Timeout(DefaultHTTPTimeout).
+		Retry(retry, retryInterval).
+		Get(url).
+		EndBytes()
+}
 
 // baseName，不是full name
 func NSImages(op *SyncOption) ([]string, error) {
+	var imageNames []string
+	if len(op.SpecifieNS) > 0 {
+		log.Infof("Only get k8s.gcr.io specifie images %s", op.SpecifieNS)
+		for _, v := range op.SpecifieNS {
+			imageNames = append(imageNames, v)
+		}
+		log.Println(imageNames)
+		return imageNames, nil
+	}
+
 	log.Info("get k8s.gcr.io public images...")
-	resp, body, errs := gorequest.New().
-		Timeout(DefaultHTTPTimeout).
-		Retry(op.Retry, op.RetryInterval).
-		Get(imgList).
-		EndBytes()
+	resp, body, errs := requestImageTagsList(op.Retry, op.RetryInterval, imgList)
 	if errs != nil {
 		return nil, fmt.Errorf("%s", errs)
 	}
 
 	defer func() { _ = resp.Body.Close() }()
 
-	var imageNames []string
 	err := jsoniter.UnmarshalFromString(jsoniter.Get(body, "child").ToString(), &imageNames)
 	if err != nil {
 		return nil, err
@@ -46,11 +59,7 @@ func NSImages(op *SyncOption) ([]string, error) {
 	}
 
 	for _, v := range op.AdditionNS {
-		resp, body, errs := gorequest.New().
-			Timeout(DefaultHTTPTimeout).
-			Retry(op.Retry, op.RetryInterval).
-			Get(fmt.Sprintf("https://k8s.gcr.io/v2/%s/tags/list", v)).
-			EndBytes()
+		resp, body, errs := requestImageTagsList(op.Retry, op.RetryInterval, fmt.Sprintf(imgListFormat, v))
 		if errs != nil {
 			log.Errorf("%s", errs)
 			continue
@@ -69,7 +78,6 @@ func NSImages(op *SyncOption) ([]string, error) {
 		}
 		imageNames = append(imageNames, nsImageNames...)
 	}
-
 	return imageNames, nil
 }
 
@@ -103,7 +111,6 @@ func ImageNames(opt *SyncOption) (Images, error) {
 		log.Fatalf("failed to submit task: %s", err)
 	}
 
-
 	imgGetWg := new(sync.WaitGroup)
 	imgGetWg.Add(len(publicImageNames))
 
@@ -133,8 +140,8 @@ func ImageNames(opt *SyncOption) (Images, error) {
 
 				for _, tag := range tags {
 					imgCh <- Image{
-						Name:       imageBaseName,
-						Tag:        tag,
+						Name: imageBaseName,
+						Tag:  tag,
 					}
 				}
 			}
@@ -150,7 +157,6 @@ func ImageNames(opt *SyncOption) (Images, error) {
 	return images, nil
 }
 
-
 func getImageTags(imageName string, opt TagsOption) ([]string, error) {
 	srcRef, err := docker.ParseReference("//" + imageName)
 	if err != nil {
@@ -161,7 +167,6 @@ func getImageTags(imageName string, opt TagsOption) ([]string, error) {
 	defer tagsCancel()
 	return docker.GetRepositoryTags(tagsCtx, sourceCtx, srcRef)
 }
-
 
 func retry(count int, interval time.Duration, f func() error) error {
 	var err error

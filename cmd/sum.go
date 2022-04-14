@@ -3,11 +3,11 @@ package cmd
 import (
 	"encoding/binary"
 	"fmt"
-	bolt "github.com/etcd-io/bbolt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/zhangguanzhang/google_containers/core"
+	bolt "go.etcd.io/bbolt"
 	"go/types"
+	"google_containers/core"
 	"time"
 )
 

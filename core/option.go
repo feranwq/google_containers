@@ -4,10 +4,10 @@ import (
 	"context"
 	types2 "github.com/docker/docker/api/types"
 	"github.com/docker/docker/registry"
-	bolt "github.com/etcd-io/bbolt"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	bolt "go.etcd.io/bbolt"
 	"strings"
 	"time"
 )
@@ -32,9 +32,10 @@ type SyncOption struct {
 	Report        bool // Report sync result
 	Ctx           context.Context
 	CheckSumer
-	Closer func() error
-	DbFile string
+	Closer     func() error
+	DbFile     string
 	AdditionNS []string
+	SpecifieNS []string
 }
 
 func (s *SyncOption) PreRun(cmd *cobra.Command, args []string) error {
@@ -45,7 +46,6 @@ func (s *SyncOption) PreRun(cmd *cobra.Command, args []string) error {
 	if s.PushNS == "" {
 		s.PushNS = s.Auth.User
 	}
-
 
 	if err := s.Verify(); err != nil {
 		return err
@@ -118,7 +118,6 @@ func (s *SyncOption) Verify() error {
 	}
 	return nil
 }
-
 
 func contains(s []string, searchterm string) bool {
 	for _, v := range s {

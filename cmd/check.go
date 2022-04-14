@@ -5,9 +5,9 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/zhangguanzhang/google_containers/core"
 	bolt "go.etcd.io/bbolt"
 	"go/types"
+	"google_containers/core"
 	"strings"
 	"time"
 )
@@ -25,7 +25,9 @@ func NewCheckComamnd() *cobra.Command {
 			if err != nil {
 				log.Fatalf("open the boltdb file %s error: %v", dbFile, err)
 			}
-			defer db.Close()
+			defer func() {
+				_ = db.Close()
+			}()
 
 			if err := db.View(func(tx *bolt.Tx) error {
 				return tx.ForEach(func(bName []byte, b *bolt.Bucket) error {
