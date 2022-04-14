@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -148,7 +149,9 @@ func SyncImages(imgs Images, opt *SyncOption) Images {
 func sync2DockerHub(image *Image, opt *SyncOption) error {
 
 	srcImg := image.String()
-	destImg := fmt.Sprintf("%s/%s/%s:%s", opt.PushRepo, opt.PushNS, image.Name, image.Tag)
+	imageNameHandler := strings.Split(image.Name, "/")
+	imageName := imageNameHandler[len(imageNameHandler)-1]
+	destImg := fmt.Sprintf("%s/%s/%s:%s", opt.PushRepo, opt.PushNS, imageName, image.Tag)
 
 	log.Infof("syncing %s => %s", srcImg, destImg)
 
