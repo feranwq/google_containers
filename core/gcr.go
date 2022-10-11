@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -37,7 +38,6 @@ func NSImages(op *SyncOption) ([]string, error) {
 		for _, v := range op.SpecifieNS {
 			imageNames = append(imageNames, v)
 		}
-		log.Println(imageNames)
 		return imageNames, nil
 	}
 
@@ -139,6 +139,9 @@ func ImageNames(opt *SyncOption) (Images, error) {
 				//构建带tag的镜像名
 
 				for _, tag := range tags {
+					if strings.HasPrefix(tag, "sha256") {
+						continue
+					}
 					imgCh <- Image{
 						Name: imageBaseName,
 						Tag:  tag,
