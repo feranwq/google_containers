@@ -58,8 +58,8 @@ jobs:
           --login-retry ${LOGIN_RETRY:=8} \
           --specifie-ns "kube-apiserver,kube-controller-manager,kube-scheduler,kube-proxy" \
           --specifie-ns "pause,etcd,coredns/coredns" \
-          --specifie-ns "dashboard,metrics-server,metrics-scraper" \
-          --specifie-ns "nginx-ingress-controller,k8s-dns-node-cache" \
+          --specifie-ns "metrics-server/metrics-server" \
+          --specifie-ns "ingress-nginx/controller,dns/k8s-dns-node-cache" \
           --debug=${DEBUG:=false}
     - name: after_success
       run: |
